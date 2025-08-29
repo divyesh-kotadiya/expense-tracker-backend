@@ -14,15 +14,13 @@ export class UserService {
       .select('-password');
     if (!updatedUser) {
       return {
-        success: false,
         message: 'User not found.',
       };
     }
 
     return {
-      success: true,
       message: 'Profile updated successfully.',
-      user: updatedUser,
+      data: updatedUser,
     };
   }
 }

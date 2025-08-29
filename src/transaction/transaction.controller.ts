@@ -7,6 +7,7 @@ import {
   Delete,
   Get,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
@@ -26,9 +27,9 @@ export class TransactionController {
   @Patch(':id')
   async update(
     @Param('id') transactionId: string,
-    @Body() updateTransactionDto: UpdateTransactionDto,
+    @Body() updateDto: UpdateTransactionDto,
   ) {
-    return this.transactionService.update(transactionId, updateTransactionDto);
+    return this.transactionService.update(transactionId, updateDto);
   }
 
   @Delete(':id')
@@ -37,7 +38,22 @@ export class TransactionController {
   }
 
   @Get('wallet/:walletId')
-  async findByWallet(@Param('walletId') walletId: string) {
-    return this.transactionService.findByWallet(walletId);
+  findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+    @Param('walletId') walletId: string,
+  ) {
+    return this.transactionService.findByWallet(
+      walletId,
+      Number(page),
+      Number(limit),
+    );
+  }
+  @Get('overview')
+  async getOverview(
+    @Query('walletId') walletId: string,
+    @Query('period') period: 'week' | 'month' | 'year',
+  ) {
+    return this.transactionService.getOverview(walletId, period);
   }
 }

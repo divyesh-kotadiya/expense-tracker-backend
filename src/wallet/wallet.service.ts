@@ -9,15 +9,6 @@ import { Model, Types } from 'mongoose';
 export class WalletService {
   constructor(@InjectModel(Wallet.name) private walletModel: Model<Wallet>) {}
 
-  private formatResponse(
-    success: boolean,
-    message: string,
-    data: object = {},
-    meta: object = {},
-  ) {
-    return { success, message, data, ...meta };
-  }
-
   async create(userId: string, walletDto: CreateWalletDto) {
     const wallet = new this.walletModel({
       ...walletDto,
@@ -25,12 +16,10 @@ export class WalletService {
     });
 
     const savedWallet = await wallet.save();
-
-    return this.formatResponse(
-      true,
-      'Wallet created successfully.',
-      savedWallet,
-    );
+    return {
+      message: 'Wallet created successfully',
+      data: savedWallet,
+    };
   }
 
   async findByUser(userId: string, page = 1, limit = 10) {
@@ -48,14 +37,13 @@ export class WalletService {
       this.walletModel.countDocuments({ user_id: userObjectId }),
     ]);
 
-    if (!wallets.length) {
-      return this.formatResponse(true, 'No wallets found.', []);
-    }
-    return this.formatResponse(true, 'Wallets fetched successfully', wallets, {
-      total,
+    return {
+      message: 'Wallets fatched successfully.',
+      data: wallets,
+      total: total,
       currentPage: page,
       totalPages: Math.ceil(total / limit),
-    });
+    };
   }
 
   async update(walletId: string, updateWalletDto: UpdateWalletDto) {
@@ -69,24 +57,21 @@ export class WalletService {
       throw new NotFoundException(`Wallet with id ${walletId} not found`);
     }
 
-    return this.formatResponse(
-      true,
-      'Wallet updated successfully',
-      updatedWallet,
-    );
+    return {
+      message: 'Wallet updated successfully',
+      data: updatedWallet,
+    };
   }
 
   async delete(walletId: string) {
     const deletedWallet = await this.walletModel.findByIdAndDelete(walletId);
 
     if (!deletedWallet) {
-      throw new NotFoundException(`Wallet with id ${walletId} not found`);
+      throw new NotFoundException(`Wallet with id ${walletId} not found.`);
     }
-
-    return this.formatResponse(
-      true,
-      'Wallet deleted successfully',
-      deletedWallet,
-    );
+    return {
+      message: 'Wallet deleted successfully',
+      data: deletedWallet,
+    };
   }
 }

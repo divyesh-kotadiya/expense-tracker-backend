@@ -40,14 +40,13 @@ export class AuthService {
     const token = this.getAccessToken(savedUser);
 
     return {
-      success: true,
       message: 'User registered successfully.',
-      user: {
+      data: {
         _id: savedUser.id as string,
         username: savedUser.username,
         email: savedUser.email,
+        access_token: token,
       },
-      access_token: token,
     };
   }
 
@@ -70,14 +69,13 @@ export class AuthService {
     const token = this.getAccessToken(existingUser);
 
     return {
-      success: true,
       message: 'Login successfully.',
-      user: {
+      data: {
         _id: existingUser.id as string,
         username: existingUser.username,
         email: existingUser.email,
+        access_token: token,
       },
-      access_token: token,
     };
   }
 }
